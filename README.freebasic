@@ -1,0 +1,10 @@
+
+You'll want to compile this with mingw or gcc to get it running with FreeBASIC.  I used Code::Blocks to import the
+MSVC project, and build libenet.a which works fine.  I may end up converting the project into CMake, which may add
+some extra simplicity to the enet project in general.
+
+I translated the headers with the help from dkl and fbfrog ( https://github.com/dkl/fbfrog ).
+
+Any help translating this would be awesome!
+
+-Oz / MrBarry ( http://www.mrbarry.com/ )
