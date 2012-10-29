@@ -5,9 +5,7 @@
 #ifndef __ENET_ENET_H__
 #define __ENET_ENET_H__
 
-#ifdef __cplusplus
 extern "C"
-#endif
 
 #include "crt/stdlib.bi"
 
@@ -53,7 +51,7 @@ end enum : type as _ENetSocketOption ENetSocketOption
 
 enum
    ENET_HOST_ANY       = 0            /'*< specifies the default server host '/
-   ENET_HOST_BROADCAST = &hFFFFFFFF   /'*< specifies a subnet-wide broadcast '/
+   ENET_HOST_BROADCAST_ = &hFFFFFFFF   /'*< specifies a subnet-wide broadcast '/ '' NOTE: Added trailing underscore to avoid function conflicts
 
    ENET_PORT_ANY       = 0             /'*< specifies that a port should be automatically chosen '/
 end enum
@@ -123,21 +121,21 @@ type EnetPacketFreeCallback as sub( byval p as _EnetPacket ptr )
  
    @sa ENetPacketFlag
  '/
-type _ENetPacket
+type ENetPacket
    as size_t                   referenceCount  /'*< internal use only '/
    as enet_uint32              flags           /'*< bitwise-or of ENetPacketFlag constants '/
    as enet_uint8 ptr data            /'*< allocated data for packet '/
    as size_t                   dataLength      /'*< length of data '/
    as ENetPacketFreeCallback   freeCallback    /'*< function to be called when the packet is no longer in use '/
-end type : type as _ENetPacket ENetPacket
+end type
 
-type _ENetAcknowledgement
+type ENetAcknowledgement
    as ENetListNode acknowledgementList
    as enet_uint32  sentTime
    as ENetProtocol command
-end type : type as _ENetAcknowledgement ENetAcknowledgement
+end type
 
-type _ENetOutgoingCommand
+type ENetOutgoingCommand
    as ENetListNode outgoingCommandList
    as enet_uint16  reliableSequenceNumber
    as enet_uint16  unreliableSequenceNumber
@@ -149,9 +147,9 @@ type _ENetOutgoingCommand
    as enet_uint16  sendAttempts
    as ENetProtocol command
    as ENetPacket ptr packet
-end type : type as _ENetOutgoingCommand ENetOutgoingCommand
+end type
 
-type _ENetIncomingCommand  
+type ENetIncomingCommand  
    as ENetListNode     incomingCommandList
    as enet_uint16      reliableSequenceNumber
    as enet_uint16      unreliableSequenceNumber
@@ -160,9 +158,9 @@ type _ENetIncomingCommand
    as enet_uint32      fragmentsRemaining
    as enet_uint32 ptr fragments
    as ENetPacket ptr packet
-end type : type as _ENetIncomingCommand ENetIncomingCommand
+end type
 
-enum _ENetPeerState
+enum ENetPeerState
    ENET_PEER_STATE_DISCONNECTED                = 0
    ENET_PEER_STATE_CONNECTING                  = 1
    ENET_PEER_STATE_ACKNOWLEDGING_CONNECT       = 2
@@ -173,7 +171,7 @@ enum _ENetPeerState
    ENET_PEER_STATE_DISCONNECTING               = 7
    ENET_PEER_STATE_ACKNOWLEDGING_DISCONNECT    = 8
    ENET_PEER_STATE_ZOMBIE                      = 9 
-end enum : type as _ENetPeerState ENetPeerState
+end enum
 
 #ifndef ENET_BUFFER_MAXIMUM
 #define ENET_BUFFER_MAXIMUM (1 + 2 * ENET_PROTOCOL_MAXIMUM_PACKET_COMMANDS)
@@ -198,7 +196,7 @@ enum
    ENET_PEER_TIMEOUT_LIMIT                = 32
    ENET_PEER_TIMEOUT_MINIMUM              = 5000
    ENET_PEER_TIMEOUT_MAXIMUM              = 30000
-   ENET_PEER_PING_INTERVAL                = 500
+   ENET_PEER_PING_INTERVAL_                = 500 '' NOTE: added trailing underscore to avoid function conflict
    ENET_PEER_UNSEQUENCED_WINDOWS          = 64
    ENET_PEER_UNSEQUENCED_WINDOW_SIZE      = 1024
    ENET_PEER_FREE_UNSEQUENCED_WINDOWS     = 32
@@ -207,7 +205,7 @@ enum
    ENET_PEER_FREE_RELIABLE_WINDOWS        = 8
 end enum
 
-type _ENetChannel
+type ENetChannel
    as enet_uint16  outgoingReliableSequenceNumber
    as enet_uint16  outgoingUnreliableSequenceNumber
    as enet_uint16  usedReliableWindows
@@ -218,16 +216,17 @@ type _ENetChannel
    as enet_uint16  incomingUnreliableSequenceNumber
    as ENetList     incomingReliableCommands
    as ENetList     incomingUnreliableCommands
-end type : type as _ENetChannel ENetChannel
+end type
 
 /'*
  * An ENet peer which data packets may be sent or received from. 
  *
  * No fields should be modified unless otherwise specified. 
  '/
-type _ENetPeer 
+type _ENetHostPTR as ENetHost ptr
+type ENetPeer 
    as ENetListNode  dispatchList
-   as _ENetHost ptr host
+   as _ENetHostPTR host
    as enet_uint16   outgoingPeerID
    as enet_uint16   incomingPeerID
    as enet_uint32   connectID
@@ -287,26 +286,32 @@ type _ENetPeer
    ''enet_uint32   unsequencedWindow [ENET_PEER_UNSEQUENCED_WINDOW_SIZE / 32]; 
    as enet_uint32	unsequencedWindow(0 TO (ENET_PEER_UNSEQUENCED_WINDOW_SIZE/32)-1)
    as enet_uint32   eventData
-end type : type as _ENetPeer ENetPeer
+end type
 
 /'* An ENet packet compressor for compressing UDP packets before socket sends or receives.
  '/
-type _ENetCompressor
+type ENetCompressor
    /'* Context data for the compressor. Must be non-NULL. '/
    as any ptr context
    /'* Compresses from inBuffers[0:inBufferCount-1], containing inLimit bytes, to outData, outputting at most outLimit bytes. Should return 0 on failure. '/
    '' TODO: translate (sorry)
    '' size_t (ENET_CALLBACK * compress) (void * context, const ENetBuffer * inBuffers, size_t inBufferCount, size_t inLimit, enet_uint8 * outData, size_t outLimit);
-   as function(byval context as any ptr, byval inBuffers as const ENetBuffer ptr, byval inBufferCount as size_t, byval inLimit as size_t, bycal outData as enet_uint8 ptr, byval outLimit as size_t) as size_t	compress
+   compress as function( _
+	byval context as any ptr, _
+	byval inBuffers as const ENetBuffer ptr, _
+	byval inBufferCount as size_t, _
+	byval inLimit as size_t, _
+	byval outData as enet_uint8 ptr, _
+	byval outLimit as size_t) as size_t
    /'* Decompresses from inData, containing inLimit bytes, to outData, outputting at most outLimit bytes. Should return 0 on failure. '/
    '' TODO: translate (sorry)
    ''size_t (ENET_CALLBACK * decompress) (void * context, const enet_uint8 * inData, size_t inLimit, enet_uint8 * outData, size_t outLimit);
-   as function(byval context as any ptr, byval inData as const enet_uint8 ptr, byval inLimit as size_t, byval outData as enet_uint8 ptr, byval outLimit as size_t) as size_t	decompress
+   as function(byval context as any ptr, byval inData as enet_uint8 ptr, byval inLimit as size_t, byval outData as enet_uint8 ptr, byval outLimit as size_t) as size_t	decompress
    /'* Destroys the context when compression is disabled or the host is destroyed. May be NULL. '/
    '' TODO: translate (sorry)
    ''void (ENET_CALLBACK * destroy) (void * context);
    as sub(byval context as any ptr)	destroy
-end type : type as _ENetCompressor ENetCompressor
+end type
 
 /'* Callback that computes the checksum of the data held in buffers[0:bufferCount-1] '/
 '' TODO: translate (sorry)
@@ -329,7 +334,7 @@ type EnetChecksumCallback as function(byval buffers as const ENetBuffer ptr, byv
     @sa enet_host_bandwidth_limit()
     @sa enet_host_bandwidth_throttle()
   '/
-type _ENetHost
+type ENetHost
    as ENetSocket           socket
    as ENetAddress          address                     /'*< Internet address of the host '/
    as enet_uint32          incomingBandwidth           /'*< downstream bandwidth of the host '/
@@ -366,12 +371,12 @@ type _ENetHost
    as enet_uint32          totalSentPackets            /'*< total UDP packets sent, user should reset to 0 as needed to prevent overflow '/
    as enet_uint32          totalReceivedData           /'*< total data received, user should reset to 0 as needed to prevent overflow '/
    as enet_uint32          totalReceivedPackets        /'*< total UDP packets received, user should reset to 0 as needed to prevent overflow '/
-end type : type as _ENetHost ENetHost
+end type
 
 /'*
  * An ENet event type, as specified in @ref ENetEvent.
  '/
-enum _ENetEventType
+enum ENetEventType
    /'* no event occurred within the specified time limit '/
    ENET_EVENT_TYPE_NONE       = 0  
 
@@ -396,20 +401,20 @@ enum _ENetEventType
      * enet_packet_destroy after use.
      '/
    ENET_EVENT_TYPE_RECEIVE    = 3
-end enum : type as _ENetEventType ENetEventType
+end enum
 
 /'*
  * An ENet event as returned by enet_host_service().
    
    @sa enet_host_service
  '/
-type _ENetEvent
+type ENetEvent
    as ENetEventType        type      /'*< type of the event '/
    as ENetPeer ptr peer      /'*< peer that generated a connect, disconnect or receive event '/
    as enet_uint8           channelID /'*< channel on the peer that generated the event, if appropriate '/
    as enet_uint32          data      /'*< data associated with the event, if appropriate '/
    as ENetPacket ptr packet    /'*< packet associated with the event, if appropriate '/
-end type : type as _ENetEvent ENetEvent
+end type
 
 /'* @defgroup global ENet global functions
     @{ 
@@ -547,9 +552,7 @@ declare function enet_range_coder_decompress (byval as any ptr , byval as const 
    
 declare function enet_protocol_command_size (byval as enet_uint8) as size_t
 
-#ifdef __cplusplus
 end extern
-#endif
 
 #endif /' __ENET_ENET_H__ '/
 

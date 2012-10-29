@@ -5,7 +5,7 @@
 #ifndef __ENET_LIST_H__
 #define __ENET_LIST_H__
 
-#include "stdlib.h"
+#include "crt/stdlib.bi"
 
 type _ENetListNode
    as _ENetListNode ptr next

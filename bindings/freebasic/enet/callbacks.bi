@@ -5,7 +5,7 @@
 #ifndef __ENET_CALLBACKS_H__
 #define __ENET_CALLBACKS_H__
 
-#include "stdlib.h"
+#include "crt/stdlib.bi"
 
 type _ENetCallbacks
     '' TODO: translate (sorry)

@@ -20,23 +20,14 @@ end enum
 #define ENET_NET_TO_HOST_16(value) (ntohs (value))
 #define ENET_NET_TO_HOST_32(value) (ntohl (value))
 
-type _
- ENetBuffer
+type ENetBuffer
     as size_t dataLength
     as any ptr data
 end type
 
-#define ENET_CALLBACK __cdecl
+#define ENET_CALLBACK cdecl
 
-#if defined ENET_DLL
-#if defined ENET_BUILDING_LIB
-#define ENET_API __declspec( dllexport )
-#else
-#define ENET_API __declspec( dllimport )
-#endif /' ENET_BUILDING_LIB '/
-#else /' !ENET_DLL '/
 #define ENET_API extern
-#endif /' ENET_DLL '/
 
 type as fd_set ENetSocketSet
 
