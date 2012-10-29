@@ -6,22 +6,21 @@
 #define __ENET_ENET_H__
 
 #ifdef __cplusplus
-extern "C" _
-
+extern "C"
 #endif
 
-#include "stdlib.h"
+#include "crt/stdlib.bi"
 
-#ifdef WIN32
-#include "enet/win32.h"
+#ifdef __FB_WIN32__
+#include "enet/win32.bi"
 #else
-#include "enet/unix.h"
+#include "enet/unix.bi"
 #endif
 
-#include "enet/types.h"
-#include "enet/protocol.h"
-#include "enet/list.h"
-#include "enet/callbacks.h"
+#include "enet/types.bi"
+#include "enet/protocol.bi"
+#include "enet/list.bi"
+#include "enet/callbacks.bi"
 
 #define ENET_VERSION_MAJOR 1
 #define ENET_VERSION_MINOR 3
