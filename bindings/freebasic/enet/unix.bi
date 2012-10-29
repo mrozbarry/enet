@@ -5,11 +5,11 @@
 #ifndef __ENET_UNIX_H__
 #define __ENET_UNIX_H__
 
-#include "stdlib.h"
-#include "sys/time.h"
-#include "sys/types.h"
-#include "netinet/in.h"
-#include "unistd.h"
+#include "crt/stdlib.bi"
+#include "crt/sys/time.bi"
+#include "crt/sys/types.bi"
+#include "crt/netinet/in.bi"
+#include "crt/unistd.bi"
 
 type as integer ENetSocket
 
