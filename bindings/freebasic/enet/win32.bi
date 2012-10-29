@@ -5,8 +5,8 @@
 #ifndef __ENET_WIN32_H__
 #define __ENET_WIN32_H__
 
-#include "stdlib.h"
-#include "winsock2.h"
+#include "crt/stdlib.bi"
+#include "win/winsock2.bi"
 
 type as SOCKET ENetSocket
 
