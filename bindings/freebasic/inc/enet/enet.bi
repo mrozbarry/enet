@@ -10,6 +10,7 @@ extern "C"
 #include "crt/stdlib.bi"
 
 #ifdef __FB_WIN32__
+#inclib "winmm"
 #include "enet/win32.bi"
 #else
 #include "enet/unix.bi"
@@ -556,3 +557,4 @@ end extern
 
 #endif /' __ENET_ENET_H__ '/
 
+#inclib "enet"
